@@ -1,0 +1,45 @@
+---
+- name: bootstrap SERI host
+  hosts: all
+  become: true
+  gather_facts: true
+  vars_files:
+    - "vault/main.yml"
+  vars:
+    java_version: 11
+    java_default_version: 11
+
+  roles:
+    - role: init
+    - role: robertdebock.bootstrap
+    - role: robertdebock.core_dependencies
+    - role: robertdebock.hostname
+      vars:
+        hostname: seri.sailpointdemo.com
+        hostname_reboot: no
+    - role: robertdebock.update
+      vars:
+        update_reboot: no
+    - role: robertdebock.java
+      vars:
+        java_version: 11
+        java_default_version: 11
+    - role: robertdebock.tomcat
+      vars:
+        tomcat_version: 9
+        tomcat_version9: 9.0.71
+        tomcat_xms: 1024M
+        tomcat_xmx: 2048M
+    - role: robertdebock.mysql
+      vars:
+        mysql_databases:
+          - name: identityiq
+            encoding: utf8
+            collation: utf8_bin
+        mysql_users:
+          - name: identityiq
+            password: identityiq
+            priv: "identityiq.*:ALL"
+    - role: identityiq
+      vars:
+        include_group_management: "no"

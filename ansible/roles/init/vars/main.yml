@@ -1,0 +1,44 @@
+---
+# vars file for core_dependencies
+
+core_dependencies_shared_packages:
+  - acl
+  - at
+  - bzip2
+  - bash
+  - git
+  - gzip
+  - tar
+  - unzip
+  - vim
+  - wget
+  - perl
+  - cpp
+  - gcc
+  - make
+  - python3
+  - ansible
+
+_core_dependencies_packages:
+  Debian:
+    - apt-transport-https
+    - debconf
+    - debconf-i18n
+    - iproute2
+    - passwd
+    - python3-apt
+    - "linux-headers-{{ ansible_kernel }}"
+    - gnupg
+
+  RedHat:
+    - dnf
+    - iproute
+    - python3-dnf
+    - python3-libselinux
+    - python3-libsemanage
+    - shadow-utils
+    - xz
+
+core_dependencies_packages: "{{ _core_dependencies_packages[ansible_distribution ~ '-' ~ ansible_distribution_major_version] | default(_core_dependencies_packages[ansible_os_family ~ '-' ~ ansible_distribution_major_version] | default(_core_dependencies_packages[ansible_os_family] )) }}"
+
+core_dependencies: "{{ core_dependencies_shared_packages + core_dependencies_packages }}"

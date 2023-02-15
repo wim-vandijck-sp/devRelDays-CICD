@@ -1,0 +1,130 @@
+---
+- name: Include secret vars
+  include_vars:
+    file: secrets.yml
+
+- name: Create identityiq application folder
+  file:
+    path: "{{ identityiq_root }}"
+    owner: tomcat
+    group: tomcat
+    state: directory
+    mode: '0774'
+      
+- name: Create folder to extract identityiq.zip
+  file: 
+    path: "{{ home_location }}/identityiq/"
+    state: directory
+    owner: sailpoint
+    group: sailpoint
+    mode: '0774'
+
+# - name: Extract identityiq.zip file
+#   unarchive:
+#     src: "identityiq-{{ identityiq_version }}.zip"
+#     dest: "{{ home_location }}/identityiq/"
+#     owner: sailpoint
+#     group: sailpoint
+
+- name: Deploy war file
+  unarchive: 
+    src: "{{ git_dest }}/build/deploy/identityiq.war"
+    remote_src: yes
+    dest: "{{ identityiq_root }}"
+
+- name: Drop existing database
+  mysql_db:
+    name: identityiq
+    state: absent
+
+- name: Create identityiq database
+  mysql_db:
+    name: identityiq
+    state: present
+
+- name: Fix create user statement for MariaDB
+  replace:
+    path: "{{ identityiq_root }}/WEB-INF/database/create_identityiq_tables-{{ identityiq_version }}.mysql"
+    regexp: 'WITH mysql_native_password '
+    replace: ''
+
+- name: Create identityiq schema
+  mysql_db:
+    name: identityiq
+    state: import
+    target: "{{ identityiq_root }}/WEB-INF/database/create_identityiq_tables-{{ identityiq_version }}.mysql"
+
+- name: Copy log4j2.properties file
+  template:
+    src: "log4j2.properties.j2"
+    dest: "{{ identityiq_root }}/WEB-INF/classes/log4j2.properties"
+    mode: '0644'
+
+- name: Copy iiq.properties file
+  template:
+    src: "iiq.properties.j2"
+    dest: "{{ identityiq_root }}/WEB-INF/classes/"
+    mode: '0644'
+  notify: restart tomcat
+
+- name: Import init.xml
+  command: "{{ java_cmd }} console iiqBeans -c \"import init.xml\""
+  args:
+    stdin: |
+      {{ iiq_admin_user }}
+      {{ iiq_admin_password }}
+  async: 1200
+  poll: 5
+  register: cmdout
+  changed_when: cmdout.rc != 0
+
+- name: Import init-lcm.xml
+  command: "{{ java_cmd }} console iiqBeans -c \"import init-lcm.xml\""
+  args:
+    stdin: |
+      {{ iiq_admin_user }}
+      {{ iiq_admin_password }}
+  async: 1200
+  poll: 5
+  register: cmdout
+  changed_when: cmdout.rc != 0
+
+
+# - name: Import init-seri.xml
+#   command: "{{ java_cmd }} console iiqBeans -c \"import seri/init-seri.xml\""
+#   args:
+#     stdin: |
+#       {{ iiq_admin_user }}
+#       {{ iiq_admin_password }}
+#   async: 1200
+#   poll: 5
+#   register: cmdout
+
+- name: Patch identityiq web
+  unarchive:
+    src: "identityiq-{{ identityiq_version }}{{ identityiq_patch_version }}.jar"
+    dest: "{{ identityiq_root }}/"
+  when: 
+    - identityiq_patch_version is defined
+
+- name: Patch identityiq database
+  mysql_db:
+    name: identityiq
+    state: import
+    target: "{{ identityiq_root }}/WEB-INF/database/upgrade_identityiq_tables-{{ identityiq_version }}{{ identityiq_patch_version }}.mysql"
+  when: 
+    - identityiq_patch_version is defined
+
+- name: Patch IIQ
+  command: "{{ java_cmd }} patch {{ identityiq_version }}{{ identityiq_patch_version }}"
+  when:
+    - identityiq_patch_version is defined
+  async: 1200
+  poll: 5
+  register: cmdout
+  changed_when: cmdout.rc != 0
+
+- name: restart tomcat
+  ansible.builtin.service:
+    name: "tomcat"
+    state: restarted

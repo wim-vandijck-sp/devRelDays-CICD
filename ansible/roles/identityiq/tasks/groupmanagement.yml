@@ -1,0 +1,101 @@
+---
+- name: Include secret vars
+  include_vars:
+    file: secrets.yml
+
+- name: copy jar file
+  ansible.builtin.copy:
+    src: group-management-1.0.6.jar
+    dest: "{{ web_inf_dir }}/lib"
+    mode: '0644'
+    owner: tomcat
+    group: tomcat
+
+
+# - name: copy group management artefacts archive
+#   ansible.builtin.copy:
+#     src: group-management-1.0.6-bin.zip
+#     dest: /var/tmp/
+- name: ensure temp extract dir exists
+  ansible.builtin.file:
+    path: /var/tmp/groupmanagement
+    state: directory
+    mode: '0755'
+
+- name: Extract archive
+  ansible.builtin.unarchive:
+    src: group-management-1.0.6-bin.zip
+    dest: /var/tmp/groupmanagement
+
+- name: Copy group management artefacts
+  ansible.builtin.copy:
+    src: /var/tmp/groupmanagement/WEB-INF/config
+    dest: "{{ web_inf_dir }}/config"
+    mode: '0750'
+    owner: tomcat
+    group: tomcat
+
+
+- name: Copy custom messages dictionary
+  ansible.builtin.copy:
+    remote_src: yes
+    src: /var/tmp/groupmanagement/WEB-INF/classes/sailpoint/web/messages/iiqCustom.properties
+    dest: "{{ web_inf_dir }}/classes/sailpoint/web/messages/iiqCustom.properties"
+    mode: '0644'
+    owner: tomcat
+    group: tomcat
+
+- name: Add extended Application attributes
+  ansible.builtin.blockinfile:
+    block: "{{ lookup('file', '/var/tmp/groupmanagement/WEB-INF/classes/sailpoint/object/ApplicationExtended.hbm.xml') }}"
+    dest: "{{ web_inf_dir }}//classes/sailpoint/object/ApplicationExtended.hbm.xml"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+
+- name: Add extended ManagedAttribute attributes
+  ansible.builtin.blockinfile:
+    block: "{{ lookup('file', '/var/tmp/groupmanagement/WEB-INF/classes/sailpoint/object/ManagedAttributeExtended.hbm.xml') }}"
+    dest: "{{ web_inf_dir }}//classes/sailpoint/object/ManagedAttributeExtended.hbm.xml"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+
+- name: Add extended Link attributes
+  ansible.builtin.blockinfile:
+    block: "{{ lookup('file', '/var/tmp/groupmanagement/WEB-INF/classes/sailpoint/object/LinkExtended.hbm.xml') }}"
+    dest: "{{ web_inf_dir }}//classes/sailpoint/object/LinkExtended.hbm.xml"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+
+- name: Add extended CertificationItem attributes
+  ansible.builtin.blockinfile:
+    block: "{{ lookup('file', '/var/tmp/groupmanagement/WEB-INF/classes/sailpoint/object/CertificationItemExtended.hbm.xml') }}"
+    dest: "{{ web_inf_dir }}//classes/sailpoint/object/CertificationItemExtended.hbm.xml"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+
+
+- name: Rebuild schema
+  command: "{{ java_cmd }} extendedSchema"
+  async: 1200
+  poll: 5
+  register: cmdout
+  changed_when: cmdout.rc != 0
+
+- name: Update schema
+  community.mysql.mysql_db:
+    name: identityiq
+    state: import
+    force: true
+    target: "{{ web_inf_dir }}/database/add_identityiq_extensions.mysql"
+
+- name: Restart Tomcat
+  ansible.builtin.service:
+    name: tomcat
+    state: restarted
+
+- name: Import group management artefacts
+  command: "{{ java_cmd }} console iiqBeans -c \"import init-entitlementmanagement.xml\""
+  args:
+    stdin: |
+      {{ iiq_admin_user }}
+      {{ iiq_admin_password }}
+  async: 1200
+  poll: 5
+  register: cmdout
+  changed_when: cmdout.rc != 0

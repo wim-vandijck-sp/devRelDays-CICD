@@ -1,0 +1,41 @@
+---
+- name: Get the current kernel release.
+  command: uname -r
+  changed_when: false
+  register: kernel_release
+
+# - name: Set the appropriate libselinux package for RHEL 8.
+#   set_fact:
+#     packer_rhel_libselinux_package: python3-libselinux
+#     when: ansible_distribution_major_version | int == 8
+
+# Done by packer and kickstart
+- name: Ensure necessary packages are installed.
+  ansible.builtin.package:
+    name: "{{ core_dependencies }}"
+    state: present
+    update_cache: yes
+
+# VirtualBox tools installation.
+# - name: Check if VirtualBox is running the guest VM.
+#   stat: path=/home/sailpoint/.vbox_version
+#   register: virtualbox_check
+
+# - include_tasks: virtualbox.yml
+#   when: virtualbox_check.stat.exists
+
+# VMware tools installation.
+- name: Check if VMWare is running the guest VM.
+  shell: "set -o pipefail && cat /proc/scsi/scsi | grep VMware"
+  changed_when: false
+  failed_when: false
+  register: vmware_check
+
+- include_tasks: vmware.yml
+  when: vmware_check.rc == 0
+
+# - name: Remove any remnants of VirtualBox ISOs.
+#   shell: >
+#     rm -rf VBoxGuestAdditions_*.iso VBoxGuestAdditions_*.iso.?
+#     warn=false
+#   tags: ['skip_ansible_lint']

@@ -1,0 +1,129 @@
+---
+- name: Include github encrypted variables.
+  include_vars: "secrets.yml"
+
+- name: Ensure git command is installed
+  ansible.builtin.package:
+    name: git
+    state: present
+
+- name: Ensure ant command is installed
+  ansible.builtin.package:
+    name: ant
+    state: present
+
+- name: Checkout repo
+  ansible.builtin.git:
+    repo: 'https://{{ git_user }}:{{ git_pat }}@{{ repo_url }}'
+    dest: "{{ git_dest }}"
+    version: main
+    force: yes
+
+- name: Change ownership of folder to sailpoint
+  ansible.builtin.file:
+    path: "{{ git_dest }}"
+    state: directory
+    recurse: yes
+    owner: sailpoint
+    group: sailpoint
+
+- name: Copy identityiq.zip file
+  ansible.builtin.copy:
+    src: "identityiq-{{ identityiq_version }}.zip"
+    dest: "{{ git_dest }}/base/ga/"
+    owner: sailpoint
+    group: sailpoint
+    mode: '0644'
+
+- name: Copy patch file
+  ansible.builtin.copy:
+    src: "identityiq-{{ identityiq_version }}{{ identityiq_patch_version }}.jar"
+    dest: "{{ git_dest }}/base/patch/"
+    owner: sailpoint
+    group: sailpoint
+    mode: '0644'
+  when: identityiq_patch_version is defined
+
+- name: Create ETS version folder
+  ansible.builtin.file:
+    path: "{{ git_dest }}/base/efix/{{ identityiq_version }}{{ identityiq_patch_version }}"
+    owner: sailpoint
+    group: sailpoint
+    state: directory
+    mode: '0774'
+  when: identityiq_ets_version is defined
+
+- name: Copy ETS file
+  ansible.builtin.copy:
+    src: "identityiq-{{ identityiq_version }}-{{ identityiq_version }}{{ identityiq_patch_version }}-{{ identityiq_ets_version }}.zip"
+    dest: "{{ git_dest }}/base/efix/{{ identityiq_version }}{{ identityiq_patch_version }}"
+    owner: sailpoint
+    group: sailpoint
+    mode: '0644'
+  when: identityiq_ets_version is defined
+
+- name: Copy build.properties file
+  ansible.builtin.template: 
+    src: "build.properties.j2"
+    dest: "{{ git_dest }}/build.properties"
+    owner: sailpoint
+    group: sailpoint
+    mode: '0644'
+    remote_src: yes
+
+- name: Copy build.properties file (hostname)
+  ansible.builtin.template: 
+    src: "build.properties.j2"
+    dest: "{{ git_dest }}/{{ hostname }}.build.properties"
+    owner: sailpoint
+    group: sailpoint
+    mode: '0644'
+    remote_src: yes
+
+- name: Copy target.properties file
+  ansible.builtin.template:
+    src: "target.properties.j2"
+    dest: "{{ git_dest }}/{{ hostname }}.target.properties"
+    owner: sailpoint
+    group: sailpoint
+    mode: '0644'
+
+- name: Copy iiq.properties file
+  ansible.builtin.template: 
+    src: "iiq.properties.j2"
+    dest: "{{ git_dest }}/{{ hostname }}.iiq.properties"
+    owner: sailpoint
+    group: sailpoint
+    mode: '0644'
+
+- name: Copy hibernation files for SERI
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ git_dest }}/web/WEB-INF/classes/sailpoint/object/"
+    owner: sailpoint
+    group: sailpoint
+    mode: 664
+  with_fileglob:
+    - hibernate/*
+  when: serify == "yes"
+
+- name: ensure build.sh is executable
+  ansible.builtin.file: 
+    path: "{{ git_dest }}/build.sh"
+    mode: "u=rwx,g=rx,o=rx"
+
+- name: Build war file
+  ansible.builtin.command: ant clean war
+  args: 
+    chdir: "{{ git_dest }}"
+  environment:
+    SPTARGET: "{{ hostname }}"
+  register: cmdout
+  changed_when: cmdout.rc != 0
+
+- name: Change ownership to sailpoint user
+  ansible.builtin.file:
+    path: "{{ git_dest }}"
+    owner: sailpoint
+    group: sailpoint
+    recurse: yes

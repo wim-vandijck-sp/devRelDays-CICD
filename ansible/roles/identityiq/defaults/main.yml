@@ -1,0 +1,29 @@
+tomcat_root: /opt/tomcat
+
+home_location: /home/sailpoint
+hostname: seri
+
+# When using GA version, comment the patch_version and ets_version
+identityiq_version: 8.3
+identityiq_patch_version: p1
+#identityiq_ets_version:
+
+iiq_admin_user: spadmin
+
+identityiq_root: "{{ tomcat_root }}/webapps/identityiq"
+
+ssd_version: 6.1
+ssd_file: "ssd-v{{ ssd_version }}.zip"
+
+web_inf_dir: "{{ tomcat_root }}/webapps/identityiq/WEB-INF"
+java_cmd: java -classpath {{ web_inf_dir }}/lib/identityiq.jar:{{ web_inf_dir }}/classes sailpoint.launch.Launcher
+
+iiq_logfile_location: /opt/tomcat/logs/sailpoint.log
+
+repo_name: "rapidLight"
+repo_url: "github.com/wim-vandijck-sp/{{ repo_name }}"
+
+git_dest: "{{ home_location }}/{{ repo_name }}"
+
+include_group_management: "no"
+serify: "no"

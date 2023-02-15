@@ -1,0 +1,50 @@
+<!-- SERIfied -->
+<property name="extended11" type="string" length="128"/>
+<property name="extended12" type="string" length="128"/>
+<property name="extended13" type="string" length="128"/>
+<property name="extended14" type="string" length="128"/>
+<property name="extended15" type="string" length="128"/>
+
+<property name="lifecycleState" type="string" length="64" access="sailpoint.persistence.ExtendedPropertyAccessor" index="spt_identity_lifecycle_ci"/>
+<property name="startDate" type="string" length="48" access="sailpoint.persistence.ExtendedPropertyAccessor" index="spt_identity_startDate_ci"/> 
+<property name="endDate" type="string" length="48" access="sailpoint.persistence.ExtendedPropertyAccessor" index="spt_identity_endDate_ci"/>
+<property name="startDateAsDate" type="string" length="48" access="sailpoint.persistence.ExtendedPropertyAccessor" index="spt_identity_startDateAsDate_ci"/>
+<property name="endDateAsDate" type="string" length="48" access="sailpoint.persistence.ExtendedPropertyAccessor" index="spt_identity_endDateAsDate_ci"/>
+<property name="terminationDate" type="string" length="48"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_terminationDate_ci"/>
+<property name="department" type="string" length="128" 
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_department_ci"/>
+<property name="region" type="string" length="128"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_region_ci"/>
+<property name="jobTitle" type="string" length="128"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_jobTitle_ci"/>
+<property name="location" type="string" length="128" 
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_location_ci"/>
+<property name="employeeId" type="string" length="48"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_employeeId_ci"/>
+<property name="phone" type="string" length="48"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_phone_ci"/>
+<property name="oldJobTitle" type="string" length="128"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_oldJobTitle_ci"/>        
+<property name="transferManager" type="string" length="128"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_transferManager_ci"/>
+<property name="costCenter" type="string" length="128"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_costCenter_ci"/>
+<property name="company" type="string" length="128"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_company_ci"/>
+          <property name="botdescription" type="string" length="128"
+          access="sailpoint.persistence.ExtendedPropertyAccessor"
+          index="spt_identity_botdescription_ci"/>
+  
+            

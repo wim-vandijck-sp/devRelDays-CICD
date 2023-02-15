@@ -1,0 +1,11 @@
+<!-- (c) Copyright 2008 SailPoint Technologies, Inc., All Rights Reserved. -->
+<!-- SERIfied -->
+
+    <property name="extended6" type="string" length="450"
+                  index="spt_link_extended6_ci"/>
+    <property name="extended7" type="string" length="450"
+                  index="spt_link_extended7_ci"/>
+    <property name="extended8" type="string" length="450"
+                  index="spt_link_extended8_ci"/>
+    <property name="extended9" type="string" length="450"
+                  index="spt_link_extended9_ci"/>

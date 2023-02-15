@@ -1,0 +1,124 @@
+##### iiq.properties #####
+#
+# (c) Copyright 2008 SailPoint Technologies, Inc., All Rights Reserved.
+#
+# This file contains configuration settings for IdentityIQ.  For your unique
+# environment, you will need to adjust the properties below.
+#
+
+##### Application Server Managed Data Source Properties #####
+
+# Depending on the app server, the "java:comp/env/" may not be required.
+jndiDataSource.jndiName=java:comp/env/jdbc/testDataSource
+
+# Set to "jndiDataSource" to use an app server managed datasource. Otherwise
+# leave the default value "dataSource".
+configuredDataSource.targetBeanName=dataSource
+
+##### Data Source Properties #####
+dataSource.maxWaitMillis=10000
+dataSource.maxTotal=50
+dataSource.minIdle=5
+#dataSource.minEvictableIdleTimeMillis=300000
+#dataSource.maxOpenPreparedStatements=-1
+
+dataSource.username=identityiq
+dataSource.password=1:iCAlakm5CVUe7+Q6hVJIBA==
+
+##### MySQL/Aurora (without SSL)  #####
+## URL Format: dataSource.url=jdbc:mysql://<host_name>:<port>/<dbname>?useServerPrepStmts=true&tinyInt1isBit=true&useSSL=false&characterEncoding=UTF-8&characterEncoding=UTF-8&serverTimezone=UTC
+## if the client timezone is not UTC, adding the JDBC option 'serverTimezone=UTC' will cause MySQL to behave
+## differently with regard to TIMESTAMP fields. See IdentityIQ Installation Guide for more details.
+dataSource.url=jdbc:mysql://localhost/identityiq?useServerPrepStmts=true&tinyInt1isBit=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+dataSource.driverClassName=com.mysql.cj.jdbc.Driver
+sessionFactory.hibernateProperties.hibernate.dialect=org.hibernate.dialect.MySQL57Dialect
+
+##### Plugins ####
+
+# Determines whether or not plugins are enabled, change
+# to false if plugins should be disabled globally
+plugins.enabled=true
+
+# Determines if SQL scripts should be executed dynamically
+# at the time a plugin is installed, upgraded or uninstalled
+plugins.runSqlScripts=true
+
+# Determines if XML object files should be imported dynamically
+# at the time a plugin is installed, upgraded or uninstalled
+plugins.importObjects=true
+
+# Determines if the global SailPoint angular bundle will be used when
+# there are snippets on a page
+plugins.angularSnippetEnabled=false
+
+
+##### Application Server Managed Plugins Data Source Properties #####
+
+# Depending on the app server, the "java:comp/env/" may not be required.
+jndiPluginsDataSource.jndiName=java:comp/env/jdbc/testPluginsDataSource
+
+# Set to "jndiPluginsDataSource" to use an app server managed datasource. Otherwise
+# leave the default value "pluginsDataSource".
+configuredPluginsDataSource.targetBeanName=pluginsDataSource
+
+##### Plugins Data Source Properties #####
+pluginsDataSource.maxWaitMillis=10000
+pluginsDataSource.maxTotal=50
+pluginsDataSource.minIdle=5
+#pluginsDataSource.minEvictableIdleTimeMillis=300000
+#pluginsDataSource.maxOpenPreparedStatements=-1
+
+pluginsDataSource.username=identityiqPlugin
+pluginsDataSource.password=1:8ORggiEVfa289a0+YccD4QQO0Eec3V9eSHaQwFHsNR4=
+
+##### MySQL (without SSL) #####
+## URL Format: dataSource.url=jdbc:mysql://<host_name>:<port>/<dbname>?useServerPrepStmts=true&tinyInt1isBit=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+pluginsDataSource.url=jdbc:mysql://localhost/identityiqPlugin?useServerPrepStmts=true&tinyInt1isBit=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
+pluginsDataSource.driverClassName=com.mysql.cj.jdbc.Driver
+
+#
+# Settings for the ruleRunner and its pool
+#
+ruleRunner.maxPoolReuse=1000
+ruleRunnerPoolConfig.maxTotal=-1
+ruleRunnerPoolConfig.maxTotalPerKey=8
+ruleRunnerPoolConfig.maxIdlePerKey=8
+ruleRunnerPoolConfig.minIdlePerKey=0
+
+##### Hibernate Listener Service Thread Pool Settings ######
+# if this is false then the listeners will not be registered.
+# if AI is installed this should probably be set to true.
+hibernateListenerServiceConfig.hibernateListenerEnabled=false
+# number of threads that will always be alive
+hibernateListenerServiceConfig.coreThreads=10
+# max number of threads that can be running if there is a high load
+hibernateListenerServiceConfig.maxThreads=20
+# how long in milliseconds extra threads will sit idle before scaling back down to the core number
+hibernateListenerServiceConfig.keepAliveTime=10000
+# how many changes can be queued up for the threads to work on
+hibernateListenerServiceConfig.queueSize=10000
+
+##### Debug Settings #####
+
+# Uncomment to send all SQL queries to std out. This provides a lot of output
+# and slows down execution, so use it wisely.
+#sessionFactory.hibernateProperties.hibernate.show_sql=true
+
+# Hibernate Transaction Isolation Levels
+# 1 = Read Uncommitted, 2 = Read Committed, 4 = Repeatable Read, 8 = Serializable
+#sessionFactory.hibernateProperties.hibernate.connection.isolation=1
+
+#
+# IIQ Keystore and Master Password properties
+#
+
+# file location of the IIQ keystore
+# (override of the default $SPHOME/WEB-INF/classes/iiq.dat )
+#
+#keyStore.file  = /example/path/filename
+
+# file location of the IIQ master password file
+# (override of the default $SPHOME/WEB-INF/classes/iiq.cfg )
+#
+#keyStore.passwordFile = /example/path/filename
+

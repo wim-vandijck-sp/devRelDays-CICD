@@ -1,0 +1,22 @@
+<!-- SERIfied -->
+<property name="extended5" type="string" length="128" index="spt_bundle_extended5_ci"/>
+<property name="extended6" type="string" length="128" index="spt_bundle_extended6_ci"/>
+<property name="extended7" type="string" length="128" index="spt_bundle_extended7_ci"/>
+<property name="extended8" type="string" length="128" index="spt_bundle_extended8_ci"/>
+<property name="extended9" type="string" length="128" index="spt_bundle_extended9_ci"/>
+<property name="extended10" type="string" length="450"/>
+<property name="extended11" type="string" length="450"/>
+<property name="extended12" type="string" length="450"/>
+<property name="extended13" type="string" length="450"/>
+<property name="extended14" type="string" length="450"/>
+<property name="extended15" type="string" length="450"/>
+<property name="extended16" type="string" length="450"/>
+<property name="extended17" type="string" length="450"/>
+<property name="extended18" type="string" length="450"/>
+<property name="extended19" type="string" length="450"/>
+<property name="extended20" type="string" length="450"/>
+
+<property name="nercRelevant" access="sailpoint.persistence.ExtendedPropertyAccessor" type="string"/>
+<property name="pciRelevant" access="sailpoint.persistence.ExtendedPropertyAccessor" type="string"/>
+<property name="soxRelevant" access="sailpoint.persistence.ExtendedPropertyAccessor" type="string"/>
+<property name="isoRelevant" access="sailpoint.persistence.ExtendedPropertyAccessor" type="string"/>
