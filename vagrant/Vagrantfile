@@ -7,14 +7,16 @@
 # you're doing.
 Vagrant.configure("2") do |config|
 
+  config.vm.provider "parallels" do |prl|
+    prl.update_guest_tools = true
+    prl.name = "Vagrant IIQ Vanilla"
+    prl.customize ["set", :id, "--device-set", "cdrom0", "--image", "/Applications/Parallels Desktop.app/Contents/Resources/Tools/prl-tools-lin-arm.iso", "--connect"]
+  end
+
   config.vm.box = "debian-arm"
 
   config.vm.network "forwarded_port", guest: 8080, host: 8181, host_ip: "127.0.0.1"
   config.vm.network "forwarded_port", guest: 80, host: 8888, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 9090, host: 9090, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 9999, host: 9999, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 389, host: 1389, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 10389, host: 10389, host_ip: "127.0.0.1"
 
   config.vm.network "private_network", ip: "192.168.56.10"
 
