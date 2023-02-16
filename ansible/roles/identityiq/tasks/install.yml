@@ -89,17 +89,6 @@
   register: cmdout
   changed_when: cmdout.rc != 0
 
-
-# - name: Import init-seri.xml
-#   command: "{{ java_cmd }} console iiqBeans -c \"import seri/init-seri.xml\""
-#   args:
-#     stdin: |
-#       {{ iiq_admin_user }}
-#       {{ iiq_admin_password }}
-#   async: 1200
-#   poll: 5
-#   register: cmdout
-
 - name: Patch identityiq web
   unarchive:
     src: "identityiq-{{ identityiq_version }}{{ identityiq_patch_version }}.jar"
