@@ -24,3 +24,6 @@ hs_err_pid*
 
 # Vagrant files
 vagrant/.vagrant/
+
+# Mac resource files
+.DS_Store
