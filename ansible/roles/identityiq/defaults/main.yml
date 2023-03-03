@@ -5,7 +5,7 @@ hostname: seri
 
 # When using GA version, comment the patch_version and ets_version
 identityiq_version: 8.3
-identityiq_patch_version: p1
+identityiq_patch_version: p2
 #identityiq_ets_version:
 
 iiq_admin_user: spadmin
