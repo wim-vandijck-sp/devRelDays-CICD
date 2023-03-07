@@ -1,5 +1,5 @@
 ---
-- name: bootstrap SERI host
+- name: bootstrap IIQ host
   hosts: all
   become: true
   gather_facts: true
@@ -15,7 +15,7 @@
     - role: robertdebock.core_dependencies
     - role: robertdebock.hostname
       vars:
-        hostname: seri.sailpointdemo.com
+        hostname: iiq.sailpointdemo.com
         hostname_reboot: no
     - role: robertdebock.update
       vars:
