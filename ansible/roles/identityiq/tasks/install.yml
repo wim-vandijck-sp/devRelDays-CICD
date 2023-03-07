@@ -11,20 +11,13 @@
     state: directory
     mode: '0774'
       
-- name: Create folder to extract identityiq.zip
-  file: 
-    path: "{{ home_location }}/identityiq/"
-    state: directory
-    owner: sailpoint
-    group: sailpoint
-    mode: '0774'
-
-# - name: Extract identityiq.zip file
-#   unarchive:
-#     src: "identityiq-{{ identityiq_version }}.zip"
-#     dest: "{{ home_location }}/identityiq/"
+# - name: Create folder to extract identityiq.zip
+#   file: 
+#     path: "{{ home_location }}/identityiq/"
+#     state: directory
 #     owner: sailpoint
 #     group: sailpoint
+#     mode: '0774'
 
 - name: Deploy war file
   unarchive: 
@@ -66,6 +59,10 @@
     dest: "{{ identityiq_root }}/WEB-INF/classes/"
     mode: '0644'
   notify: restart tomcat
+
+- name: Pause for 5 seconds
+  ansible.builtin.pause:
+    seconds: 5
 
 - name: Import init.xml
   command: "{{ java_cmd }} console iiqBeans -c \"import init.xml\""
